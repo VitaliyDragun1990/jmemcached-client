@@ -13,17 +13,6 @@ import com.revenat.jmemcached.protocol.ResponseReader;
  *
  */
 public interface ClientConfig {
-
-	/**
-	 * Returns host name of the {@code JMemcached} server.
-	 */
-	String getHost();
-	
-	/**
-	 * Returns port number of the {@code JMemcached} server.
-	 * @return
-	 */
-	int getPort();
 	
 	/**
 	 * Returns {@link RequestWriter} instance.

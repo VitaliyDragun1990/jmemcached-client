@@ -7,8 +7,9 @@ import com.revenat.jmemcached.client.impl.JMemcachedClientFactory;
 public class ClientFunctionalityTest {
 
 	public static void main(String[] args) throws Exception {
+		ClientFactory factory = new JMemcachedClientFactory();
 		// Connects to JMemcached server which is listening on port 9010 at 'localhost'
-		try (Client client = JMemcachedClientFactory.buildNewClient("localhost", 9010)) {
+		try (Client client = factory.buildNewClient("localhost", 9010)) {
 			client.put("test", "Hello world");
 			System.out.println(client.get("test").get());
 			
