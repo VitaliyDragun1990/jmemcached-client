@@ -22,6 +22,7 @@ public interface Client extends AutoCloseable {
 	 * 
 	 * @param object object to be placed inside {@code JMemcached} store
 	 * @return {@link Status} object that represents result of the operation.
+	 * @throws NullPointerException if either {@code key} or {@code object} is null
 	 * @throws IOException
 	 */
 	Status put(String key, Object object) throws IOException;
@@ -44,6 +45,7 @@ public interface Client extends AutoCloseable {
 	 * 
 	 * @return {@link Status} object that represents result of the operation.
 	 * 
+	 * @throws NullPointerException if either {@code key} or {@code object} is null
 	 * @throws IOException
 	 */
 	Status put(String key, Object object, Integer ttl, TimeUnit timeUnit) throws IOException;
@@ -54,6 +56,7 @@ public interface Client extends AutoCloseable {
 	 * @param key string identifier used for storing an object
 	 * @return {@link Optional} with the object that was stored with specified
 	 *         {@code key} if any, or the empty {@link Optional} otherwise.
+	 * @throws NullPointerException if {@code key} is null
 	 * @throws IOException
 	 */
 	<T> Optional<T> get(String key) throws IOException;
@@ -64,6 +67,7 @@ public interface Client extends AutoCloseable {
 	 * 
 	 * @param key string identifier used for storing an object.
 	 * @return {@link Status} object that represents result of the operation.
+	 * @throws NullPointerException if {@code key} is null
 	 * @throws IOException
 	 */
 	Status remove(String key) throws IOException;

@@ -33,7 +33,7 @@ public class JMemcachedClientFactoryTest {
 	}
 	
 	@Test
-	public void throwsNullPointerExceptionIfBuildNewClientWithNullHost() throws Exception {
+	public void shouldNotAllowToBuildNewClientUsingNullHost() throws Exception {
 		expected.expect(NullPointerException.class);
 		expected.expectMessage(containsString("host can not be null"));
 		
@@ -41,7 +41,7 @@ public class JMemcachedClientFactoryTest {
 	}
 	
 	@Test
-	public void throwsJMemcachedConfigExceptionIfBuildNewClientWithEmptyHost() throws Exception {
+	public void shouldNotAllowToBuildNewClientUsingEmptyHost() throws Exception {
 		expected.expect(JMemcachedConfigException.class);
 		expected.expectMessage(containsString("host can not be empty"));
 		
@@ -49,7 +49,7 @@ public class JMemcachedClientFactoryTest {
 	}
 	
 	@Test
-	public void throwsJMemcachedConfigExceptionIfBuildNewClientWithNegativePortValue() throws Exception {
+	public void shouldNotAllowToBuildNewClientUsingNegativePortValue() throws Exception {
 		expected.expect(JMemcachedConfigException.class);
 		expected.expectMessage(containsString(
 				String.format("Invalid port number. Valid port number range is from 0 to 65535. Specified port value: %d",
@@ -59,7 +59,7 @@ public class JMemcachedClientFactoryTest {
 	}
 	
 	@Test
-	public void throwsJMemcachedConfigExceptionIfBuildNewClientWithIllegalPortValue() throws Exception {
+	public void shouldNotAllowToBuildNewClientUsingIllegalPortValue() throws Exception {
 		expected.expect(JMemcachedConfigException.class);
 		expected.expectMessage(containsString(
 				String.format("Invalid port number. Valid port number range is from 0 to 65535. Specified port value: %d",
@@ -69,31 +69,31 @@ public class JMemcachedClientFactoryTest {
 	}
 	
 	@Test
-	public void returnsDefaultHostValue() throws Exception {
+	public void shouldAllowToGetDefaultHostValue() throws Exception {
 		String defaultHost = factory.getDefaultHost();
 		
 		assertThat(defaultHost, equalTo(JMemcachedClientFactory.DEFAULT_HOST));
 	}
 	
 	@Test
-	public void returnsDefaultPortValue() throws Exception {
+	public void shouldAllowToGetDefaultPortValue() throws Exception {
 		int defaultPort = factory.getDefaultPort();
 		
 		assertThat(defaultPort, equalTo(JMemcachedClientFactory.DEFAULT_PORT));
 	}
 	
 	@Test
-	public void returnsClientUsingProvidedHostAndPort() throws Exception {
+	public void shouldAllowToBuildClientUsingProvidedHostAndPort() throws Exception {
 		assertNotNull("Client should not be null", factory.buildNewClient("myhost", 9090));
 	}
 	
 	@Test
-	public void returnsClientUsingProvidedHostAndDefaultPort() throws Exception {
+	public void shouldAllowToBuildClientUsingDefaultPortAndProvidedHost() throws Exception {
 		assertNotNull("Client should not be null", factory.buildNewClient("myhost"));
 	}
 	
 	@Test
-	public void returnsClientUsingDefaultHostAndDefaultPort() throws Exception {
+	public void shouldAllowToBuildClientUsingDefaultPortAndHost() throws Exception {
 		assertNotNull("Client should not be null", factory.buildNewClient());
 	}
 	

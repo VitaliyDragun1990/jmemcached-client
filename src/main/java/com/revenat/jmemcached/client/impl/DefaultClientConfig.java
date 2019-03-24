@@ -10,7 +10,8 @@ import com.revenat.jmemcached.protocol.impl.RequestConverter;
 import com.revenat.jmemcached.protocol.impl.ResponseConverter;
 
 /**
- * Default implementation of the {@link ClientConfig}
+ * Default implementation of the {@link ClientConfig}. Returns the same instance
+ * of every component for every call.
  * 
  * @author Vitaly Dragun
  *
@@ -20,7 +21,7 @@ class DefaultClientConfig implements ClientConfig {
 	private final ResponseReader responseReader;
 	private final ObjectSerializer objectSerializer;
 	private final ObjectDeserializer objectDeserializer;
-	
+
 	DefaultClientConfig() {
 		this.requestWriter = new RequestConverter();
 		this.responseReader = new ResponseConverter();

@@ -7,7 +7,7 @@ import com.revenat.jmemcached.protocol.ResponseReader;
 
 /**
  * Component responsible for storing all the client-specific configurations
- * for the {@code JMemcached} application.
+ * for the client module of the {@code JMemcached} application.
  * 
  * @author Vitaly Dragun
  *

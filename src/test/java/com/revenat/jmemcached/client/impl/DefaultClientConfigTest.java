@@ -21,12 +21,12 @@ public class DefaultClientConfigTest {
 	}
 	
 	@Test
-	public void returnsRequestWriter() throws Exception {
+	public void shouldAllowToGetRequestWriter() throws Exception {
 		assertNotNull("RequestWriter should not be null", config.getRequestWriter());
 	}
 	
 	@Test
-	public void returnsTheSameInstanceOfTheRequestWriterForEveryCall() throws Exception {
+	public void shouldAllowToGetSameInstanceOfRequestWriterForEveryCall() throws Exception {
 		RequestWriter writerA = config.getRequestWriter();
 		RequestWriter writerB = config.getRequestWriter();
 		
@@ -34,12 +34,12 @@ public class DefaultClientConfigTest {
 	}
 	
 	@Test
-	public void returnsResponseReader() throws Exception {
+	public void shouldAllowToGetResponseReader() throws Exception {
 		assertNotNull("ResponseReader should not be null", config.getResponseReader());
 	}
 	
 	@Test
-	public void returnsTheSameInstanceOfTheResponseReaderForEveryCall() throws Exception {
+	public void shouldAllowToGetSameInstanceOfResponseReaderForEveryCall() throws Exception {
 		ResponseReader readerA = config.getResponseReader();
 		ResponseReader readerB = config.getResponseReader();
 		
@@ -47,12 +47,12 @@ public class DefaultClientConfigTest {
 	}
 	
 	@Test
-	public void returnsObjectSerializer() throws Exception {
+	public void shouldAllowToGetObjectSerializer() throws Exception {
 		assertNotNull("ObjectSerializer should not be null", config.getObjectSerializer());
 	}
 	
 	@Test
-	public void returnsTheSameInstanceOfObjectSerializerForEveryCall() throws Exception {
+	public void shouldAllowToGetSameInstanceOfObjectSerializerForEveryCall() throws Exception {
 		ObjectSerializer serializerA = config.getObjectSerializer();
 		ObjectSerializer serializerB = config.getObjectSerializer();
 		
@@ -60,12 +60,12 @@ public class DefaultClientConfigTest {
 	}
 	
 	@Test
-	public void returnsObjectDeserializer() throws Exception {
+	public void shouldAllowToGetObjectDeserializer() throws Exception {
 		assertNotNull("ObjectDeserializer shold not be null", config.getObjectDeserializer());
 	}
 	
 	@Test
-	public void returnsTheSameInstanceOfObjectDeserializerForEveryCall() throws Exception {
+	public void shouldAllowToGetSameInstanceOfObjectDeserializerForEveryCall() throws Exception {
 		ObjectDeserializer deserializerA = config.getObjectDeserializer();
 		ObjectDeserializer deserializerB = config.getObjectDeserializer();
 		

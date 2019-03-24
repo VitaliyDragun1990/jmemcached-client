@@ -1,7 +1,7 @@
 package com.revenat.jmemcached.client.impl;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,13 +38,14 @@ import com.revenat.jmemcached.protocol.ObjectDeserializer;
 import com.revenat.jmemcached.protocol.ObjectSerializer;
 import com.revenat.jmemcached.protocol.RequestWriter;
 import com.revenat.jmemcached.protocol.ResponseReader;
+import com.revenat.jmemcached.protocol.model.Command;
 import com.revenat.jmemcached.protocol.model.Request;
 import com.revenat.jmemcached.protocol.model.Response;
 import com.revenat.jmemcached.protocol.model.Status;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class DefaultClientTest {
-	private static final Object OBJECT = new Object();
+	private static final String OBJECT = "data";
 	private static final byte[] DATA = new byte[] {0};
 	private static final String KEY = "key";
 	private static final ByteArrayInputStream INPUT = new ByteArrayInputStream(new byte[0]);
@@ -74,15 +76,15 @@ public class DefaultClientTest {
 	}
 
 	@Test
-	public void closesSocket() throws Exception {
+	public void shouldCloseSocket() throws Exception {
 		client.close();
 
 		verify(socket, times(1)).close();
 	}
 
 	@Test
-	public void clearsJMemcachedStore() throws Exception {
-		Request expected = Request.clear();
+	public void shouldAllowToClearJMemcachedStore() throws Exception {
+		Request expected = Request.empty(Command.CLEAR);
 		when(responseReader.readFrom(INPUT)).thenReturn(Response.empty(Status.CLEARED));
 		assertWriteRequest(expected);
 
@@ -94,8 +96,8 @@ public class DefaultClientTest {
 	}
 
 	@Test
-	public void removesObjectFromJMemcachedStore() throws Exception {
-		Request expected = Request.remove(KEY);
+	public void shouldAllowToRemoveObjectFromJMemcachedStore() throws Exception {
+		Request expected = Request.withKey(Command.REMOVE, KEY);
 		assertWriteRequest(expected);
 		when(responseReader.readFrom(INPUT)).thenReturn(Response.empty(Status.REMOVED));
 		
@@ -106,14 +108,19 @@ public class DefaultClientTest {
 		verify(responseReader, times(1)).readFrom(INPUT);
 	}
 	
+	@Test(expected = NullPointerException.class)
+	public void shouldNotAllowToRemoveObjectUsingNullKey() throws Exception {
+		client.remove(null);
+	}
+	
 	@Test
-	public void returnsObjectFromJMemcachedStore() throws Exception {
-		Request expected = Request.get(KEY);
+	public void shouldAllowToRetrieveObjectFromJMemcachedStore() throws Exception {
+		Request expected = Request.withKey(Command.GET, KEY);
 		assertWriteRequest(expected);
 		when(responseReader.readFrom(INPUT)).thenReturn(Response.withData(Status.GOTTEN, DATA));
 		when(deserializer.fromByteArray(any())).thenReturn(Optional.of(OBJECT));
 		
-		Optional<Object> result = client.get(KEY);
+		Optional<String> result = client.get(KEY);
 		
 		assertThat(result.get(), equalTo(OBJECT));
 		verify(requestWriter, times(1)).writeTo(same(OUTPUT), equals(expected));
@@ -121,9 +128,14 @@ public class DefaultClientTest {
 		verify(deserializer, times(1)).fromByteArray(eq(DATA));
 	}
 	
+	@Test(expected = NullPointerException.class)
+	public void shouldNotAllowToRetrieveObjectUsingNullKey() throws Exception {
+		client.get(null);
+	}
+	
 	@Test
-	public void putsObjectIntoJMemcachedStoreWithoutTtl() throws Exception {
-		Request expected = Request.put(KEY, DATA, null);
+	public void shouldAllowToPutObjectIntoJMemcachedStoreWithoutTtl() throws Exception {
+		Request expected = Request.withKeyAndData(Command.PUT, KEY, DATA, null);
 		assertWriteRequest(expected);
 		when(responseReader.readFrom(INPUT)).thenReturn(Response.empty(Status.ADDED));
 		when(serializer.toByteArray(any())).thenReturn(DATA);
@@ -136,15 +148,25 @@ public class DefaultClientTest {
 		verify(serializer, times(1)).toByteArray(eq(OBJECT));
 	}
 	
+	@Test(expected = NullPointerException.class)
+	public void shouldNotAllowToPutObjectUsingNullKey() throws Exception {
+		client.put(null, OBJECT);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void shouldNotAllowToPutNull() throws Exception {
+		client.put(KEY, null);
+	}
+	
 	@Test
-	public void putsObjectIntoJMemcachedStoreWitTtl() throws Exception {
-		int ttl = 10;
-		Request expected = Request.put(KEY, DATA, (long) (ttl*1000));
+	public void shouldAllowToPutsObjectIntoJMemcachedStoreWitTtl() throws Exception {
+		int ttl = 1000;
+		Request expected = Request.withKeyAndData(Command.PUT, KEY, DATA, (long) ttl);
 		assertWriteRequest(expected);
 		when(responseReader.readFrom(INPUT)).thenReturn(Response.empty(Status.ADDED));
 		when(serializer.toByteArray(any())).thenReturn(DATA);
 		
-		Status result = client.put(KEY, OBJECT, ttl, TimeUnit.SECONDS);
+		Status result = client.put(KEY, OBJECT, ttl, TimeUnit.MILLISECONDS);
 		
 		assertThat(result, equalTo(Status.ADDED));
 		verify(requestWriter, times(1)).writeTo(same(OUTPUT), equals(expected));
@@ -156,10 +178,19 @@ public class DefaultClientTest {
 		doAnswer(new Answer<Void>() {
 			public Void answer(InvocationOnMock invocation) throws Throwable {
 				Request actual = invocation.getArgument(1);
-				assertThat(actual, equalTo(expected));
+				assertThat(actual, equalsTo(expected));
 				return null;
 			}
 		}).when(requestWriter).writeTo(any(OutputStream.class), any(Request.class));
+	}
+	
+
+	private static Matcher<Request> equalsTo(Request expected) {
+		return allOf(
+				hasProperty("key", equalTo(expected.getKey())),
+				hasProperty("ttl", equalTo(expected.getTtl())),
+				hasProperty("data", equalTo(expected.getData()))
+				);
 	}
 	
 	private static Request equals(final Request expected) {

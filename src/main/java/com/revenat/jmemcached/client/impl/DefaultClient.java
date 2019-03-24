@@ -1,5 +1,7 @@
 package com.revenat.jmemcached.client.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,6 +15,7 @@ import com.revenat.jmemcached.protocol.ObjectDeserializer;
 import com.revenat.jmemcached.protocol.ObjectSerializer;
 import com.revenat.jmemcached.protocol.RequestWriter;
 import com.revenat.jmemcached.protocol.ResponseReader;
+import com.revenat.jmemcached.protocol.model.Command;
 import com.revenat.jmemcached.protocol.model.Request;
 import com.revenat.jmemcached.protocol.model.Response;
 import com.revenat.jmemcached.protocol.model.Status;
@@ -50,14 +53,22 @@ class DefaultClient implements Client {
 
 	@Override
 	public Status put(String key, Object object) throws IOException {
-		return put(key, object, null, null);
+		return processPut(key, object, null, null);
 	}
 
 	@Override
 	public Status put(String key, Object object, Integer ttl, TimeUnit timeUnit) throws IOException {
+		return processPut(key, object, ttl, timeUnit);
+	}
+	
+	private Status processPut(String key, Object object, Integer ttl, TimeUnit timeUnit) throws IOException {
+		requireNonNull(key, "key can not be null");
+		requireNonNull(object, "object can not be null");
+		
 		byte[] data = objectSerializer.toByteArray(object);
 		Long requestTTLMillis = calculateTTL(ttl, timeUnit);
-		Response response = makeRequest(Request.put(key, data, requestTTLMillis));
+		Response response = makeRequest(
+				Request.withKeyAndData(Command.PUT, key, data, requestTTLMillis));
 		return response.getStatus();
 	}
 
@@ -68,18 +79,18 @@ class DefaultClient implements Client {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Optional<T> get(String key) throws IOException {
-		Response response = makeRequest(Request.get(key));
+		Response response = makeRequest(Request.withKey(Command.GET, key));
 		return (Optional<T>) objectDeserializer.fromByteArray(response.getData());
 	}
 
 	@Override
 	public Status remove(String key) throws IOException {
-		return makeRequest(Request.remove(key)).getStatus();
+		return makeRequest(Request.withKey(Command.REMOVE, key)).getStatus();
 	}
 
 	@Override
 	public Status clear() throws IOException {
-		return makeRequest(Request.clear()).getStatus();
+		return makeRequest(Request.empty(Command.CLEAR)).getStatus();
 	}
 
 	@Override
