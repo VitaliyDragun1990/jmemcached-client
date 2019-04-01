@@ -20,7 +20,7 @@ public class JMemcachedClientFactory implements ClientFactory {
 	@Override
 	public Client buildNewClient(String host, int port) throws IOException {
 		Socket socket = createSocket(validateHost(host), validatePort(port));
-		return new DefaultClient(new DefaultClientConfig(), socket);
+		return new DefaultClient(new DefaultClientContext(), socket);
 	}
 
 	protected Socket createSocket(String host, int port)

@@ -1,4 +1,4 @@
-package com.revenat.jmemcached.client;
+package com.revenat.jmemcached.client.impl;
 
 import com.revenat.jmemcached.protocol.ObjectDeserializer;
 import com.revenat.jmemcached.protocol.ObjectSerializer;
@@ -6,13 +6,12 @@ import com.revenat.jmemcached.protocol.RequestWriter;
 import com.revenat.jmemcached.protocol.ResponseReader;
 
 /**
- * Component responsible for storing all the client-specific configurations
- * for the client module of the {@code JMemcached} application.
+ * This interface represents parameter object for {@link DefaultClient} component.
  * 
  * @author Vitaly Dragun
  *
  */
-public interface ClientConfig {
+interface ClientContext {
 	
 	/**
 	 * Returns {@link RequestWriter} instance.

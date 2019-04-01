@@ -5,12 +5,12 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import com.revenat.jmemcached.client.Client;
-import com.revenat.jmemcached.client.ClientConfig;
 import com.revenat.jmemcached.protocol.ObjectDeserializer;
 import com.revenat.jmemcached.protocol.ObjectSerializer;
 import com.revenat.jmemcached.protocol.RequestWriter;
@@ -36,11 +36,11 @@ class DefaultClient implements Client {
 	private final InputStream serverInputStream;
 	private final OutputStream serverOutputStream;
 
-	DefaultClient(ClientConfig config, Socket socket) throws IOException {
-		this.requestWriter = config.getRequestWriter();
-		this.responseReader = config.getResponseReader();
-		this.objectSerializer = config.getObjectSerializer();
-		this.objectDeserializer = config.getObjectDeserializer();
+	DefaultClient(ClientContext context, Socket socket) throws IOException {
+		this.requestWriter = context.getRequestWriter();
+		this.responseReader = context.getResponseReader();
+		this.objectSerializer = context.getObjectSerializer();
+		this.objectDeserializer = context.getObjectDeserializer();
 		this.socket = socket;
 		this.serverInputStream = socket.getInputStream();
 		this.serverOutputStream = socket.getOutputStream();
@@ -52,7 +52,7 @@ class DefaultClient implements Client {
 	}
 
 	@Override
-	public Status put(String key, Object object) throws IOException {
+	public Status put(String key, Serializable object) throws IOException {
 		return processPut(key, object, null, null);
 	}
 
@@ -78,7 +78,7 @@ class DefaultClient implements Client {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Optional<T> get(String key) throws IOException {
+	public <T extends Serializable> Optional<T> get(String key) throws IOException {
 		Response response = makeRequest(Request.withKey(Command.GET, key));
 		return (Optional<T>) objectDeserializer.fromByteArray(response.getData());
 	}

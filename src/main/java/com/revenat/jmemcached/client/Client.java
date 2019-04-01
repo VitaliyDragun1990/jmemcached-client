@@ -1,6 +1,7 @@
 package com.revenat.jmemcached.client;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +26,7 @@ public interface Client extends AutoCloseable {
 	 * @throws NullPointerException if either {@code key} or {@code object} is null
 	 * @throws IOException
 	 */
-	Status put(String key, Object object) throws IOException;
+	Status put(String key, Serializable object) throws IOException;
 
 	/**
 	 * Puts specified {@code object} into the {@code JMemcached} store using
@@ -59,7 +60,7 @@ public interface Client extends AutoCloseable {
 	 * @throws NullPointerException if {@code key} is null
 	 * @throws IOException
 	 */
-	<T> Optional<T> get(String key) throws IOException;
+	<T extends Serializable> Optional<T> get(String key) throws IOException;
 
 	/**
 	 * Removes object that was stored with the provided {@code key} from the

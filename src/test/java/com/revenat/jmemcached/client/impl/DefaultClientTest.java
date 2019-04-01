@@ -33,7 +33,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import com.revenat.jmemcached.client.ClientConfig;
 import com.revenat.jmemcached.protocol.ObjectDeserializer;
 import com.revenat.jmemcached.protocol.ObjectSerializer;
 import com.revenat.jmemcached.protocol.RequestWriter;
@@ -60,7 +59,7 @@ public class DefaultClientTest {
 	@Mock
 	private ObjectDeserializer deserializer;
 
-	private ClientConfig clientConfigStub;
+	private ClientContext clientConfigStub;
 
 	@Spy
 	private Socket socket;
@@ -205,7 +204,7 @@ public class DefaultClientTest {
 		});
 	}
 
-	private class ClientConfigStub implements ClientConfig {
+	private class ClientConfigStub implements ClientContext {
 		@Override
 		public RequestWriter getRequestWriter() {
 			return DefaultClientTest.this.requestWriter;
